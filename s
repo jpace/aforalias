@@ -11,6 +11,7 @@
 beseekfiles() {
     local suffix=$1
     shift
+    echo "find -type f -name \"*.$suffix\" | sort | xargs glark $*"
     find -type f -name "*.$suffix" | sort | xargs glark $*
 }
 
