@@ -1,6 +1,13 @@
 #!/bin/zsh
 # -*- sh-mode -*-
 
+fyndeany() {
+    local suffix=$1
+    shift
+    echo "finding with suffix: $suffix"
+    find -type f -name "*$**$suffix" | sort
+}
+
 fyndedirs() {
     local suffix=$1
     shift
@@ -28,6 +35,8 @@ fynde() {
 	txt|t)  shift; fyndefiles ".txt" $* ;;
 	file|.)  shift; fyndefiles "" $* ;;
 	dir|/)  shift; fyndedirs "" $* ;;
+	any|,)  shift; fyndeany "" $* ;;
+	"")  find | sort ;;
         *)
 	    if [ -f "build.gradle" ]
 	    then

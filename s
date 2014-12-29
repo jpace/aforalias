@@ -11,8 +11,8 @@
 beseekfiles() {
     local suffix=$1
     shift
-    echo "find -type f -name \"*.$suffix\" | sort | xargs glark $*"
-    find -type f -name "*.$suffix" | sort | xargs glark $*
+    echo "find -type f -name \"*$suffix\" | sort | xargs glark $*"
+    find \( -type d \( -name .git -o -name .svn \) -prune \) -o -type f -name "*$suffix" -print0 | xargs -0 glark $*[2,$#]
 }
 
 beseek() {
@@ -23,11 +23,12 @@ beseek() {
 	return
     fi
     case "$1" in
-        r)  shift; beseekfiles "rb" $* ;;
-        gv) shift; beseekfiles "groovy" $* ;;
-        gr) shift; beseekfiles "gradle" $* ;;
-        j)  shift; beseekfiles "java" $* ;;
-        J)  shift; beseekfiles "jar" $* ;;
+        r)  shift; beseekfiles ".rb" $* ;;
+        gv) shift; beseekfiles ".groovy" $* ;;
+        gr) shift; beseekfiles ".gradle" $* ;;
+        j)  shift; beseekfiles ".java" $* ;;
+        J)  shift; beseekfiles ".jar" $* ;;
+        .)  shift; beseekfiles "" $* ;;
         *)
 	    if [ -f "build.gradle" ]
 	    then
