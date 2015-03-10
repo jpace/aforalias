@@ -12,7 +12,7 @@ beseekfiles() {
     local suffix=$1
     shift
     echo "find -type f -name \"*$suffix\" | sort | xargs glark $*"
-    find \( -type d \( -name .git -o -name .svn \) -prune \) -o -type f -name "*$suffix" -print0 | xargs -0 glark $*[2,$#]
+    find \( -type d \( -name .git -o -name .svn \) -prune \) -o -type f -name "*$suffix" -print0 | sort -z | xargs -0 glark $*[2,$#]
 }
 
 beseek() {
