@@ -5,7 +5,7 @@ fyndeany() {
     local suffix=$1
     shift
     echo "finding with suffix: $suffix"
-    find -type f -name "*$**$suffix" | sort
+    find -name "*$**$suffix" | sort
 }
 
 fyndedirs() {
