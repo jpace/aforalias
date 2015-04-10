@@ -8,6 +8,14 @@
 # o: open
 # b: build
 
+beseekjarfiles() {
+    echo find \( -type d \( -name .git -o -name .svn \) -prune \) -o -type f -name "*$suffix" -print0
+    echo xargs -0 glark $*[1,$#]
+    echo find \( -type d -name .svn -prune \) -o \( -type f -name "*.jar" \) -print
+    echo '{ jar tvf VeryUnlikely | glark --label=VeryUnlikely $*[1,$#]; }'
+    find \( -type d -name .svn -prune \) -o \( -type f -name "p*.jar" \) -print0 | sort -z | xargs -0 -I VeryUnlikely sh -c '{ jar tvf VeryUnlikely | glark --label=VeryUnlikely XML_; }'
+}
+
 beseekfiles() {
     local suffix=$1
     shift
@@ -15,7 +23,7 @@ beseekfiles() {
     echo "command: find \( -type d \( -name .git -o -name .svn \) -prune \) -o -type f -name \"*$suffix\" -print0 |"
     echo "           sort -z |"
     echo "           xargs -0 glark $*[1,$#]"
-    find \( -type d \( -name .git -o -name .svn \) -prune \) -o -type f -name "*$suffix" -print0 | sort -z | xargs -0 glark $*[1,$#]
+    find \( -type d \( -name .git -o -name .svn -o -name staging \) -prune \) -o -type f -name "*$suffix" -print0 | sort -z | xargs -0 glark $*[1,$#]
 }
 
 beseek() {
@@ -32,7 +40,8 @@ beseek() {
         gv) shift; beseekfiles ".groovy" $* ;;
         gr) shift; beseekfiles ".gradle" $* ;;
         j)  shift; beseekfiles ".java" $* ;;
-        J)  shift; beseekfiles ".jar" $* ;;
+        J)  shift; beseekjarfiles $* ;;
+        x)  shift; beseekfiles ".xml" $* ;;
         .)  shift; beseekfiles "" $* ;;
         *)
 	    if [ -f "build.gradle" ]
