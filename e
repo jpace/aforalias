@@ -23,7 +23,7 @@ eyeball() {
 		ls -lF --color=tty $1;
             elif file $1 | grep 'ASCII text' >/dev/null
             then
-		less $1
+		less -XR $1
             else
 		echo "not handled: $1"
             fi
