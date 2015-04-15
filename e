@@ -5,7 +5,7 @@ eyeball() {
     case "$1" in
         *.jar|*.war) jar tvf $1 | sort -k 6 ;;
 
-        *.zip)       unzip -l $1 | ruby -e 'lines = STDIN.readlines; puts lines[3 .. lines.length - 3]' | sort -k 4 ;;
+        *.zip)       unzip -l $1 | tail -n +4 | head --lines=-2 | sort -k 4 ;;
 
         *.tar.gz)    tar ztvf $1 ;;
         *.tgz)       tar ztvf $1 ;;

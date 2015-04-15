@@ -5,5 +5,5 @@
 
 for i in $*
 do
-    emacsclient --no-wait $i
+    emacsclient --no-wait $i &
 done
