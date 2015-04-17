@@ -8,62 +8,68 @@
 # o: open
 # b: build
 
+if $(which glark >/dev/null)
+then
+    grp="glark"
+    grpbinlist="glark --binary=list"
+else
+    grp="grep"
+    grpbinlist="grep"
+fi
+
 beseeker() {
     ext=$1
     shift
     grp=$1
     shift
     find \( -type d \( -name .git -o -name .svn -o -name staging \) -prune \) \
-         -o -type f -name "*$ext" -print0 | \
+         -o -type f -regex ".*$ext\$" -print0 | \
          sort -z | \
          xargs -0 $grp $*
 }
-    
-beseekjarfiles() {
-    beseeker ".jar" "glark --binary=list" $*
-}
-    
-beseekzipfiles() {
-    beseeker ".zip" "glark --binary=list" $*
+
+beseek_binary_list_files() {
+    ext=$1
+    shift
+    beseeker $ext $grpbinlist $*
 }
 
-beseekfiles() {
-    local suffix=$1
+beseek_files() {
+    local ext=$1
     shift
-    grp=$((which glark >/dev/null) && echo "glark" || echo "grep")
     find \( -type d \( -name .git -o -name .svn -o -name staging \) -prune \) \
-         -o -type f -name "*$suffix" -print0 | \
+         -o -type f -regex ".*$ext\$" -print0 | \
          sort -z | \
          xargs -0 $grp $*
 }
 
 beseek() {
     for final in $@; do :; done
-    if [[ -f $final || -d $final ]]
+    if [[ -f $final ]]
     then
-	grp=$((which glark >/dev/null) && echo "glark" || echo "grep")
-	$grp $*
+	$grpbinlist $*
 	return
     else
 	case "$1" in
-            r)   shift; beseekfiles ".rb" $* ;;
-            erb) shift; beseekfiles ".erb" $* ;;
-            gv)  shift; beseekfiles ".groovy" $* ;;
-            gr)  shift; beseekfiles ".gradle" $* ;;
-            j)   shift; beseekfiles ".java" $* ;;
-            J)   shift; beseekjarfiles $* ;;
-            x)   shift; beseekfiles ".xml" $* ;;
-            Z|z) shift; beseekzipfiles $* ;;
-            .)   shift; beseekfiles "" $* ;;
+            r)   shift; beseek_files "\.rb" $* ;;
+            erb) shift; beseek_files "\.erb" $* ;;
+            gv)  shift; beseek_files "\.groovy" $* ;;
+            gr)  shift; beseek_files "\.gradle" $* ;;
+            j)   shift; beseek_files "\.java" $* ;;
+            J)   shift; beseek_binary_list_files "\.jar" $* ;;
+            T|tgz|tz)   shift; beseek_binary_list_files ".\(tar.gz\|tgz\)" $* ;;
+            x)   shift; beseek_files "\.xml" $* ;;
+            Z|z) shift; beseek_binary_list_files "\.zip" $* ;;
+            .)   shift; beseek_files "" $* ;;
             *)
 		if [ -f "build.gradle" ]
 		then
-		    beseekfiles "java" $*
+		    beseek_files "java" $*
 		elif [ -f "Rakefile" ]
 		then
-		    beseekfiles "rb" $*
+		    beseek_files "rb" $*
 		else
-		    echo "not handled: $1"
+		    beseek_files "" $*
 		fi
 		;;
 	esac
