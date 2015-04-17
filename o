@@ -5,5 +5,10 @@
 
 for i in $*
 do
-    emacsclient --no-wait $i &
+    ext=`echo $i | sed -e 's/.*\.//'`
+    echo "ext: $ext"
+    case "$ext" in
+	jpg|JPG) geeqie $i ;;
+	*)       emacsclient --no-wait $i & ;;
+    esac
 done
