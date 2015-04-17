@@ -6,9 +6,9 @@
 for i in $*
 do
     ext=`echo $i | sed -e 's/.*\.//'`
-    echo "ext: $ext"
     case "$ext" in
-	jpg|JPG) geeqie $i ;;
+	jpg|JPG) geeqie $i & ;;
+	pdf|PDF) okular $i & ;;
 	*)       emacsclient --no-wait $i & ;;
     esac
 done
