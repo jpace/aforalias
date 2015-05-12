@@ -12,7 +12,7 @@
 dirdiff() {
     from=$1
     to=$2
-    diff --exclude=staging --exclude=.git --exclude=.svn -r $from $to
+    diff -bwB --exclude=staging --exclude=.git --exclude=.svn -r $from $to
 }
 
 diffit() {
@@ -30,6 +30,12 @@ diffit() {
         elif [[ -d $fp ]]
         then
             dirdiff $fp $tofd
+        elif [[ -f $tp ]]
+        then
+            diff $fromfd $tp
+        elif [[ -f $fp ]]
+        then
+            diff $fp $tofd
         else
             dirdiff $fromfd $tofd
         fi
