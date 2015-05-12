@@ -13,7 +13,7 @@ beseeker() {
     shift
     grp=$1
     shift
-    find \( -type d \( -name .git -o -name .svn -o -name staging \) -prune \) \
+    find \( -type d \( -name .git -o -name .svn -o -name staging -o name backup \) -prune \) \
          -o -type f -name "*$ext" -print0 | \
          sort -z | \
          xargs -0 $grp $*
@@ -29,15 +29,17 @@ beseekzipfiles() {
 
 beseekfiles() {
     local suffix=$1
+    echo "suffix: $suffix" >& 2
     shift
     grp=$((which glark >/dev/null) && echo "glark" || echo "grep")
-    find \( -type d \( -name .git -o -name .svn -o -name staging \) -prune \) \
+    find \( -type d \( -name .git -o -name .svn -o -name staging -o -name backup \) -prune \) \
          -o -type f -name "*$suffix" -print0 | \
          sort -z | \
          xargs -0 $grp $*
 }
 
 beseek() {
+    grp=$((which glark >/dev/null) && echo "glark" || echo "grep")
     for final in $@; do :; done
     if [[ -f $final || -d $final ]]
     then
@@ -46,15 +48,17 @@ beseek() {
 	return
     else
 	case "$1" in
-            r)   shift; beseekfiles ".rb" $* ;;
-            erb) shift; beseekfiles ".erb" $* ;;
-            gv)  shift; beseekfiles ".groovy" $* ;;
-            gr)  shift; beseekfiles ".gradle" $* ;;
-            j)   shift; beseekfiles ".java" $* ;;
+            r)   shift; f "rb"     | xargs $grp $* ;;
+            erb) shift; f "erb"    | xargs $grp $* ;;
+            gv)  shift; f "groovy" | xargs $grp $* ;;
+            gr)  shift; f "gradle" | xargs $grp $* ;;
+            j)   shift; f "java"   | xargs $grp $* ;;
             J)   shift; beseekjarfiles $* ;;
-            x)   shift; beseekfiles ".xml" $* ;;
+            x)   shift; f "xml"    | xargs $grp $* ;;
             Z|z) shift; beseekzipfiles $* ;;
             .)   shift; beseekfiles "" $* ;;
+            -s=*) sfx=$1; shift; echo "?"; sfx=`echo $sfx | sed -e 's/^\-s=\.\?/./'`; echo $sfx; beseekfiles $sfx $* ;;
+            -s)   shift; sfx=$1; shift; echo "?"; sfx=`echo $sfx | sed -e 's/^\-s=\.\?/./'`; echo $sfx; beseekfiles $sfx $* ;;
             *)
 		if [ -f "build.gradle" ]
 		then
