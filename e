@@ -1,37 +1,51 @@
 #!/bin/sh
 # -*- sh-mode -*-
 
-eyeball() {
+for i in $*
+do
     case "$1" in
-        *.jar|*.war) jar tvf $1 | sort -k 6 ;;
+        *.jar|*.war)
+            jar tvf $1 | sort -k 6
+            ;;
 
-        *.zip)       unzip -l $1 | tail -n +4 | head --lines=-2 | sort -k 4 ;;
+        *.zip)
+            # the tail/head trim off the zip header and summary:
+            unzip -l $1 | tail -n +4 | head --lines=-2 | sort -k 4
+            ;;
 
-        *.tar.gz)    tar ztvf $1 ;;
-        *.tgz)       tar ztvf $1 ;;
-        *.tar)       tar tvf $1 ;;
+        *.tar.gz)
+            tar ztvf $1
+            ;;
 
-        *.txt)       less $1 ;;
-        *.xml)       less $1 ;;
+        *.tgz)
+            tar ztvf $1
+            ;;
+        
+        *.tar)
+            tar tvf $1
+            ;;
+
+        *.txt)
+            less $1
+            ;;
+
+        *.xml)
+            less $1
+            ;;
 
         *)
             if [ ! -e $1 ]
             then
-		echo "does not exist: $1"
+	            echo "does not exist: $1"
             elif [ -d $1 ]
             then
-		ls -lF --color=tty $1;
+		        ls -lF --color=tty $1;
             elif file $1 | grep 'ASCII text' >/dev/null
             then
-		less -XR $1
+		        less -XR $1
             else
-		echo "not handled: $1"
+		        echo "not handled: $1"
             fi
             ;;
     esac
-}
-
-for i in $*
-do
-    eyeball $i
 done
