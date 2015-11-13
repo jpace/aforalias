@@ -21,6 +21,9 @@ diffit() {
     local tofd=$3
     if [[ -d $fromfd || -d $tofd ]]
     then
+	echo fromdir: $fromfd
+	echo todir: $tofd
+
         # handle d foo/bar/Gz.txt glub, where glub is a directory containing foo/bar/Gz.txt
         fp=$fromfd/$tofd
         tp=$tofd/$fromfd
