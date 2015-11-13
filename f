@@ -36,7 +36,11 @@ fynde() {
         dir|/)      shift; fyndedirs "" $* ;;
         file|.)     shift; fyndefiles "" $* ;;
         any|,)      shift; fyndeany "" $* ;;
+        -s=*)       sfx=$1; shift; sfx=`echo $sfx | sed -e 's/^\-s=\.\?/./'`; echo f: $sfx >&2; fyndefiles $sfx $* ;;
+        -s)         shift; sfx=$1; shift; sfx=`echo $sfx | sed -e 's/^\-s=\.\?/./'`; echo f: $sfx >&2; fyndefiles $sfx $* ;;
+        -w)         shift; fyndefiles "" $* ;;
         "")         find | sort ;;
+        *.*)        find . -name $* | sort ;;
         *)
             if [ -f "build.gradle" ]
             then
