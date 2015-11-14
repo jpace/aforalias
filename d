@@ -12,7 +12,7 @@
 dirdiff() {
     from=$1
     to=$2
-    diff --exclude=staging --exclude=.git --exclude=.svn -r $from $to
+    diff -bwB --exclude=staging --exclude=.git --exclude=.svn -r $from $to
 }
 
 diffit() {
@@ -21,6 +21,9 @@ diffit() {
     local tofd=$3
     if [[ -d $fromfd || -d $tofd ]]
     then
+	echo fromdir: $fromfd
+	echo todir: $tofd
+
         # handle d foo/bar/Gz.txt glub, where glub is a directory containing foo/bar/Gz.txt
         fp=$fromfd/$tofd
         tp=$tofd/$fromfd
@@ -30,6 +33,12 @@ diffit() {
         elif [[ -d $fp ]]
         then
             dirdiff $fp $tofd
+        elif [[ -f $tp ]]
+        then
+            diff $fromfd $tp
+        elif [[ -f $fp ]]
+        then
+            diff $fp $tofd
         else
             dirdiff $fromfd $tofd
         fi

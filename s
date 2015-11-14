@@ -1,5 +1,5 @@
-#!/bin/bash
-# -*- sh-mode -*-
+#!/bin/zsh
+# -*- sh -*-
 
 # s: search (grep)
 # f: find
@@ -8,72 +8,99 @@
 # o: open
 # b: build
 
-if $(which glark >/dev/null)
+grp=$((which glark >/dev/null) && echo "glark" || echo "grep")
+
+for xx in "$@"
+do
+    echo xx: $xx :xx >&2
+done
+for final in $@; do :; done
+
+if [[ -f $final || -d $final ]]
 then
-    grp="glark"
-    grpbinlist="glark --binary=list"
+    echo "running grep, since $final found as file or directory" >&2
+    grp=$((which glark >/dev/null) && echo "glark" || echo "grep")
+    $grp $*
+    return
 else
-    grp="grep"
-    grpbinlist="grep"
+    echo "1: '$1'" >&2
+    case "$1" in
+        rb|r)
+            shift
+            f "rb" | xargs $grp $*
+            ;;
+
+        erb)
+            shift
+            f "erb" | xargs $grp $*
+            ;;
+
+        groovy|gv)
+            shift
+            f "groovy" | xargs $grp $*
+            ;;
+
+        gradle|gr)
+            shift
+            f "gradle" | xargs $grp $*
+            ;;
+
+        java|j)
+            shift
+            f "java" | xargs $grp $*
+            ;;
+
+        jar|J)
+            shift
+	    # this will work with glark, but not grep:
+            f "jar" | xargs $grp --binary=list $*
+            ;;
+
+        zip|Z|z)
+            shift
+	    # this will work with glark, but not grep:
+            f "zip" | xargs $grp --binary=list $*
+            ;;
+
+        xml|x)
+            shift
+            f "xml" | xargs $grp $*
+            ;;
+
+        .)
+            shift
+            f "." | xargs $grp $*
+            ;;
+
+        -s=*) 
+            sfx=$1
+            shift
+            sfx=`echo $sfx | sed -re 's/^\-s=\.\?//'`
+            echo sfx $sfx >&2
+            f -s $sfx $* | xargs $grp $*
+            ;;
+
+        -s) 
+            shift
+            sfx=$1
+            shift
+            echo sfx $sfx >&2
+            sfx=`echo $sfx | sed -re 's/^\.//'`
+            echo sfx: $sfx >&2
+            f -s $sfx | xargs $grp $*
+            ;;
+
+        *)
+            if [[ -f "build.gradle" || -f "build.xml" ]]
+            then
+                f "java" | xargs $grp $*
+            elif [ -f "Rakefile" ]
+            then
+                echo "rakefile exists" >&2
+                f "rb" | xargs $grp $*
+            else
+                echo "not handled: $1" >&2
+            fi
+            ;;
+    esac
 fi
-
-beseeker() {
-    ext=$1
-    shift
-    grp=$1
-    shift
-    find \( -type d \( -name .git -o -name .svn -o -name staging \) -prune \) \
-         -o -type f -regex ".*$ext\$" -print0 | \
-         sort -z | \
-         xargs -0 $grp $*
-}
-
-beseek_binary_list_files() {
-    ext=$1
-    shift
-    beseeker $ext $grpbinlist $*
-}
-
-beseek_files() {
-    local ext=$1
-    shift
-    find \( -type d \( -name .git -o -name .svn -o -name staging \) -prune \) \
-         -o -type f -regex ".*$ext\$" -print0 | \
-         sort -z | \
-         xargs -0 $grp $*
-}
-
-beseek() {
-    for final in $@; do :; done
-    if [[ -f $final ]]
-    then
-	$grpbinlist $*
-	return
-    else
-	case "$1" in
-            r)   shift; beseek_files "\.rb" $* ;;
-            erb) shift; beseek_files "\.erb" $* ;;
-            gv)  shift; beseek_files "\.groovy" $* ;;
-            gr)  shift; beseek_files "\.gradle" $* ;;
-            j)   shift; beseek_files "\.java" $* ;;
-            J)   shift; beseek_binary_list_files "\.jar" $* ;;
-            T|tgz|tz)   shift; beseek_binary_list_files ".\(tar.gz\|tgz\)" $* ;;
-            x)   shift; beseek_files "\.xml" $* ;;
-            Z|z) shift; beseek_binary_list_files "\.zip" $* ;;
-            .)   shift; beseek_files "" $* ;;
-            *)
-		if [ -f "build.gradle" ]
-		then
-		    beseek_files "java" $*
-		elif [ -f "Rakefile" ]
-		then
-		    beseek_files "rb" $*
-		else
-		    beseek_files "" $*
-		fi
-		;;
-	esac
-    fi
-}
-
-beseek $*
