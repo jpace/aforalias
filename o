@@ -21,24 +21,24 @@ fi
 for i in $*
 do
     case $i:e in
-	jpg|jpeg|JPG)
-	    $debug $jpgapp $i
-	    ;;
-	
-	png|PNG)
-	    $debug $pngapp $i
-	    ;;
-	
-	gif|GIF)
-	    $debug $pngapp $i
-	    ;;
-	
-	pdf|PDF)
-	    $debug $pdfapp $i
-	    ;;
-	
-	*)
-	    $debug emacsclient --no-wait $i
-	    ;;
+        jpg|jpeg|JPG)
+            $debug $jpgapp $i
+            ;;
+        
+        png|PNG)
+            $debug $pngapp $i
+            ;;
+        
+        gif|GIF)
+            $debug $pngapp $i
+            ;;
+        
+        pdf|PDF)
+            $debug $pdfapp $i
+            ;;
+        
+        *)
+            $debug emacsclient --no-wait $i
+            ;;
     esac
 done
