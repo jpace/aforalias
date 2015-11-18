@@ -1,13 +1,41 @@
 #!/bin/zsh
 # -*- sh-mode -*-
 
-# s: search (grep)
-# f: find
-# l,d: list (dir)
-# e: eyeball (view)
-# o: open
-# b: build
-# d: diff
+# NAME
+
+# d - diff
+
+# SYNOPSIS
+
+# d <from ...> <to>
+
+# EXAMPLES
+
+# d fromdir/foo.txt todir/foo.txt
+#  % diff fromdir/foo.txt todir/foo.txt
+
+# d -W  fromdir/foo.txt todir/foo.txt
+#  - ignores all whitespace
+#  % diff -bwB fromdir/foo.txt todir/foo.txt
+
+# d -i  fromdir/foo.txt todir/foo.txt
+#  - ignores case
+#  % diff -i fromdir/foo.txt todir/foo.txt
+
+# d -i  fromdir/foo.txt todir/foo.txt
+#  - ignores case
+#  % diff -i fromdir/foo.txt todir/foo.txt
+
+# d fromdir/foo.txt todir
+#  - if todir is a directory, this is expanded to:
+#  % diff fromdir/foo.txt todir/foo.txt
+
+# d fromdir todir
+#  - if fromdir and todir are directories, this is expanded to:
+#  % diff -r fromdir todir
+#  actually, this uses the default excludes:
+#  % diff --exclude=staging --exclude=.svn --exclude=.git --exclude=*~ -r fromdir todir
+#  actually, this uses the default excludes:
 
 dirdiff() {
     diffcmd=$1
@@ -16,6 +44,15 @@ dirdiff() {
     to=$4
     echo $diffcmd $diffargs -r $from $to
 }
+
+while getopts "iW" opt
+do
+    echo "opt: <<<$opt>>>"
+done
+
+echo "star: $*"
+
+# exit
 
 diffcmd=diff
 diffargs=
