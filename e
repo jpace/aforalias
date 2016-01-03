@@ -3,6 +3,10 @@
 
 debug=
 
+typeset -A programs
+programs[pdf]=okular
+programs[jpg]=geeqie
+
 if [[ $1 == "--debug" ]]
 then
     echo entering debug mode ...
@@ -29,11 +33,7 @@ do
             $debug unzip -l $1 | tail -n +4 | head --lines=-2 | sort -k 4
             ;;
 
-        *.tar.gz)
-            $debug tar ztvf $1
-            ;;
-
-        *.tgz)
+        *.tar.gz|*.tgz)
             $debug tar ztvf $1
             ;;
         
@@ -42,11 +42,23 @@ do
             ;;
 
         *.txt)
-            $debug less $1
+            $debug less -XR $1
             ;;
 
         *.xml)
-            $debug less $1
+            $debug less -XR $1
+            ;;
+
+        *.pdf)
+            $debug $programs[pdf] $1
+            ;;
+
+        *.jpg|*.JPG)
+            $debug $programs[jpg] $1
+            ;;
+
+        *.7z)
+            $debug 7za l $1
             ;;
 
         *)
@@ -55,7 +67,7 @@ do
                 echo "does not exist: $1"
             elif [ -d $1 ]
             then
-                $debug ls -lF --color=tty $1;
+                $debug ls -lF --color=tty $1
             elif file $1 | grep 'ASCII text' >/dev/null
             then
                 # -X prevents the console from being cleared when less exits:

@@ -14,15 +14,15 @@
 # d fromdir/foo.txt todir/foo.txt
 #  % diff fromdir/foo.txt todir/foo.txt
 
-# d -W  fromdir/foo.txt todir/foo.txt
+# d -W fromdir/foo.txt todir/foo.txt
 #  - ignores all whitespace
 #  % diff -bwB fromdir/foo.txt todir/foo.txt
 
-# d -i  fromdir/foo.txt todir/foo.txt
+# d -i fromdir/foo.txt todir/foo.txt
 #  - ignores case
 #  % diff -i fromdir/foo.txt todir/foo.txt
 
-# d -i  fromdir/foo.txt todir/foo.txt
+# d -i fromdir/foo.txt todir/foo.txt
 #  - ignores case
 #  % diff -i fromdir/foo.txt todir/foo.txt
 
@@ -35,7 +35,6 @@
 #  % diff -r fromdir todir
 #  actually, this uses the default excludes:
 #  % diff --exclude=staging --exclude=.svn --exclude=.git --exclude=*~ -r fromdir todir
-#  actually, this uses the default excludes:
 
 dirdiff() {
     diffcmd=$1
