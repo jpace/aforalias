@@ -4,7 +4,9 @@
 debug=
 
 typeset -A programs
-programs[pdf]=okular
+
+# todo: confirm these via `which evince`, etc.
+programs[pdf]=evince
 programs[jpg]=geeqie
 
 if [[ $1 == "--debug" ]]
@@ -49,7 +51,7 @@ do
             $debug less -XR $1
             ;;
 
-        *.pdf)
+        *.pdf|*.PDF)
             $debug $programs[pdf] $1
             ;;
 
