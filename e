@@ -25,6 +25,7 @@ fi
 
 for i in $*
 do
+    echo "\$1: $1"
     case "$1" in
         *.jar|*.war)
             $debug jar tvf $1 | sort -k 6
@@ -79,4 +80,5 @@ do
             fi
             ;;
     esac
+    shift
 done
