@@ -44,32 +44,31 @@ dirdiff() {
     echo $diffcmd $diffargs -r $from $to
 }
 
+diffargs=""
+
+ignore_whitespace=""
+ignore_case=""
+
 while getopts "iW" opt
 do
     echo "opt: <<<$opt>>>"
+    case $opt in
+        i) echo "case"; diffargs="${diffargs} -i" ;;
+        W) echo "whitespace"; diffargs="${diffargs} -bwB" ;;
+        *) echo "huh?" ;;
+    esac
 done
+
+shift $((OPTIND - 1))
 
 echo "star: $*"
 
 # exit
 
 diffcmd=diff
-diffargs=
 
-if [[ $1 == '-W' ||  $1 == '--ignore-whitepace' ]]
-then
-    echo "whitespace considered harmless"
-    shift
-    diffargs="$diffargs -bwB"
-fi
-if [[ $1 == '-i' ||  $1 == '--ignore-case' ]]
-then
-    echo "case considered harmless"
-    shift
-    diffargs="$diffargs -i"
-fi
+echo "diffargs: ${diffargs}"
 
-echo "diffargs: $diffargs"
 fromfd=$1
 shift
 tofd=$1
@@ -81,21 +80,21 @@ then
     echo todir: $tofd >&2
 
     # handle d foo/bar/Gz.txt glub, where glub is a directory containing foo/bar/Gz.txt
-    fp=$fromfd/$tofd
-    tp=$tofd/$fromfd
+    frompath=$fromfd/$tofd
+    topath=$tofd/$fromfd
 
-    if [[ -d $tp ]]
+    if [[ -d $topath ]]
     then
-        dirdiff $diffcmd $diffargs $fromfd $tp
-    elif [[ -d $fp ]]
+        dirdiff $diffcmd $diffargs $fromfd $topath
+    elif [[ -d $frompath ]]
     then
-        dirdiff $diffcmd $diffargs $fp $tofd
-    elif [[ -f $tp ]]
+        dirdiff $diffcmd $diffargs $frompath $tofd
+    elif [[ -f $topath ]]
     then
-        diff $fromfd $tp
-    elif [[ -f $fp ]]
+        diff $fromfd $topath
+    elif [[ -f $frompath ]]
     then
-        diff $fp $tofd
+        diff $frompath $tofd
     else
         dirdiff $diffcmd $diffargs $fromfd $tofd
     fi
