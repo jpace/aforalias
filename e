@@ -8,6 +8,7 @@ typeset -A programs
 # todo: confirm these via `which evince`, etc.
 programs[pdf]=evince
 programs[jpg]=geeqie
+programs[png]=geeqie
 
 if [[ $1 == "--debug" ]]
 then
@@ -58,6 +59,10 @@ do
 
         *.jpg|*.JPG)
             $debug $programs[jpg] $1
+            ;;
+
+        *.png|*.PNG)
+            $debug $programs[png] $1
             ;;
 
         *.7z)
