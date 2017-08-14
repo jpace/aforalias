@@ -57,7 +57,7 @@ do
             $debug $programs[pdf] $1
             ;;
 
-        *.jpg|*.JPG)
+        *.jpg|*.JPG|*.jpeg|*.JPEG)
             $debug $programs[jpg] $1
             ;;
 
