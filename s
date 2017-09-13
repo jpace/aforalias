@@ -67,6 +67,11 @@ else
             f "xml" | xargs $grp $*
             ;;
 
+        json)
+            shift
+            f "json" | xargs $grp $*
+            ;;
+
         .)
             shift
             f "." | xargs $grp $*

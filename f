@@ -70,6 +70,11 @@ case "$1" in
         fyndefiles ".xml" $*
         ;;
 
+    json|x)
+        shift
+        fyndefiles ".json" $*
+        ;;
+
     html|h)
         shift
         fyndefiles ".html" $*
